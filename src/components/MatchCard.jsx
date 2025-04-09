@@ -1,11 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import StarIcon from "@mui/icons-material/Star";
 import { Card } from "@mui/material";
 import CustomButton from "./CustomButton";
-const MatchCard = () => {
+import { getRoomOwner, getVenuesById } from "../data/matches";
+import dayjs from "dayjs";
+import { matchFormat, matchStatus } from "../constants";
+const MatchCard = ({ data }) => {
+  const [room, setRoom] = useState({ owner: "", venue: "" });
+
+  const fetchRoomOwner = async () => {
+    try {
+      const response = await getRoomOwner(data.roomOwner);
+      setRoom({ ...room, owner: `${response.firstName} ${response.lastName}` });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchVenueName = async () => {
+    if (!data.venueId) {
+      setRoom((prev) => ({ ...prev, venue: "N/A" }));
+      return;
+    }
+
+    try {
+      const response = await getVenuesById(data.venueId);
+      setRoom((prev) => ({
+        ...prev,
+        venue: response?.name || "N/A",
+      }));
+    } catch (err) {
+      console.error("Failed to fetch venue:", err);
+      setRoom((prev) => ({ ...prev, venue: "N/A" }));
+    }
+  };
+
+  useEffect(() => {
+    fetchRoomOwner();
+    fetchVenueName();
+  }, [data?.roomOwner, data?.venueId]);
+
   return (
     <Card
       elevation={0}
@@ -31,7 +68,7 @@ const MatchCard = () => {
             fontSize={17}
             fontWeight={600}
           >
-            Evening Doubles
+            {data.title}
           </Typography>
           <Typography
             variant="body1"
@@ -39,14 +76,14 @@ const MatchCard = () => {
             fontSize={14}
             sx={{ mt: "2px" }}
           >
-            Hosted by Alex Chen
+            Hosted by {room?.owner}
           </Typography>
         </div>
         <div className="right">
           <div
             className="chip"
             style={{
-              backgroundColor: "#16a34a",
+              backgroundColor: matchStatus[data.status]?.bgColor,
               display: "inline-block",
               padding: "5px 12px",
               borderRadius: "20px",
@@ -54,11 +91,11 @@ const MatchCard = () => {
           >
             <Typography
               variant="body1"
-              color="white"
+              color={matchStatus[data.status]?.color}
               fontSize={13}
               fontWeight={600}
             >
-              3 spots left
+              {matchStatus[data.status]?.name}
             </Typography>
           </div>
         </div>
@@ -78,19 +115,19 @@ const MatchCard = () => {
         >
           <CalendarMonthIcon style={{ color: "#666666" }} fontSize="small" />
           <Typography variant="body1" color="#666666" fontSize={14}>
-            Today, 6:00 PM - 8:00 PM
+            {dayjs(data.matchDate).format("DD/MM/YYYY")}
           </Typography>
         </div>
         <div className="schedule" style={{ display: "flex", gap: 8 }}>
           <StarIcon style={{ color: "#666666" }} fontSize="small" />
           <Typography variant="body1" color="#666666" fontSize={14}>
-            Skill Level: Intermediate 3.5-4.0
+            {matchFormat[data.matchFormat]}
           </Typography>
         </div>
         <div className="schedule" style={{ display: "flex", gap: 8 }}>
           <LocationOnIcon style={{ color: "#666666" }} fontSize="small" />
           <Typography variant="body1" color="#666666" fontSize={14}>
-            Sunset Park Courts, Las Vegas
+            {!data.venueId ? "Not Available" : room?.venue}
           </Typography>
         </div>
       </div>

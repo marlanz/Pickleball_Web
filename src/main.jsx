@@ -6,6 +6,7 @@ import "./index.css";
 import Home from "./pages/Home.jsx";
 import { createTheme, ThemeProvider } from "@mui/material";
 import router from "./Router.jsx";
+import GlobalProvider from "../GlobalProvider.jsx";
 
 const theme = createTheme({
   typography: { fontFamily: "Montserrat" },
@@ -27,8 +28,10 @@ const theme = createTheme({
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <GlobalProvider>
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </GlobalProvider>
   </StrictMode>
 );

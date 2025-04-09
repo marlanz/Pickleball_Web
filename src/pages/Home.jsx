@@ -8,6 +8,7 @@ import { tournaments } from "../data/tournaments";
 import TournamentList from "../components/TournamentList";
 import TextField from "@mui/material/TextField";
 import MatchCard from "../components/MatchCard";
+import CustomMatches from "../components/CustomMatches";
 
 const Home = () => {
   return (
@@ -47,11 +48,17 @@ const Home = () => {
           className="button-group"
           style={{ marginTop: "30px", display: "flex", gap: "15px" }}
         >
-          <CustomButton title={"Find a match"} padding={"10px 24px"} />
+          <CustomButton
+            fontsize={18}
+            title={"Find a match"}
+            padding={"10px 24px"}
+          />
           <CustomButton
             title={"Join a Tournament"}
             padding={"10px 24px"}
             outlined={true}
+            bgColor={"white"}
+            fontsize={18}
           />
         </div>
         <div className="featured-tour" style={{ marginTop: "100px" }}>
@@ -184,6 +191,7 @@ const Home = () => {
         <div className="body">
           <div className="leaderboard"></div>
           <div className="top-performers"></div>
+          {/* <CustomMatches /> */}
         </div>
       </div>
     </div>
